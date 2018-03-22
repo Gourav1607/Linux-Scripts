@@ -1,0 +1,83 @@
+# Show Disks
+    lsblk
+
+# Create Partitions
+    partition disk
+
+# Format
+    mkfs.ext4   /dev/sda1
+    mkswap      /dev/sda2
+    swapon      /dev/sda2
+
+# Mount partition
+    mount   /dev/sda1   /mnt
+    mkdir   -p  /mnt/boot
+    mount   /dev/sda2   /mnt/boot
+    mkdir   -p  /mnt/home
+    mount   /dev/sda3   /mnt/home
+
+# Connect to Wifi
+    wifi-menu
+
+# Check Connection
+    ip addr
+    ping google.com
+
+# Install Base and Base-devel package
+    pacstrap    -i  /mnt    base base-devel
+
+# Fstab
+    genfstab    -U  /mnt    >   /mnt/etc/fstsb
+    arch-chroot /mnt    /bin/bash
+
+# Generate Locale
+    nano    /etc/locale.gen
+    locale-gen
+    echo LANG=en_US.UTF-8   >   /etc/locale.conf
+
+# Configure Time
+    ls  -l  /usr/share/zoneinfo |   less
+    ln  -sf /usr/share/zoneinfo /EST5EDT
+    ln  -sf /etc/localtime
+    hwclock --systohc   -utc
+
+# Finalize
+    mkinitcpio  -p  linux
+
+# Install grub
+    pacman  -S  grub
+    grub_install    --recheck   /dev/sda
+    grub_mkcinfig   -o  /boot/grub/grub.cfg
+
+# Configure Hosts
+    echo myarchname >   /etc/hostname
+    nano    /etc/hosts
+        127.0.0.1   loopback    localhost   myarch
+
+# Install Wifi
+    pacman  -S  iw  wpa_supplication
+    pacman  -S  dialog
+
+# Create Password
+    passwd
+
+# Unmount
+    umount  -R  /mnt
+
+# Add user
+    useradd -m  -G  wheel   -S  /bin/bash   gourav1607
+    passwd  gourav1607
+    ls  /home
+    pacman  -S  sudo
+    nano    /etc/sudoers    #uncomment wheel
+
+# Install Window Manager
+    sudo    pacman  -Syu
+    sudo    pacman  xorg-server xorg-server-utils
+    pacman  deepin deepin-extra
+
+# Configure Lock Screen
+    pacman  lightdm
+    systemctl   enable  lightdm.service
+    systemctl   start   lightdm.service
+    configure   lightdm

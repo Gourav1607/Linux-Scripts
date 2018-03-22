@@ -1,0 +1,111 @@
+# Show Disks
+    lsblk
+
+# Create Partitions
+    cfdisk
+
+# Format
+    mkfs.ext4   /dev/sda1
+    mkswap      /dev/sda2
+    swapon      /dev/sda2
+
+# Mount partition
+    mount   /dev/sda1   /mnt
+    mkdir   -p  /mnt/boot
+    mount   /dev/sda2   /mnt/boot
+    mkdir   -p  /mnt/home
+    mount   /dev/sda3   /mnt/home
+
+# Connect to Wifi
+    wifi-menu
+
+# Check Connection
+    ip addr
+    ping google.com
+
+# Mirrorlist
+    nano    /etc/pacman.d/mirrorlist
+
+# Install Base and Base-devel package
+    pacstrap    -i  /mnt    base base-devel
+
+# Fstab
+    genfstab    -U  /mnt    >   /mnt/etc/fstsb
+    nano    /mnt/etc/fstab  # If error
+    arch-chroot /mnt    /bin/bash
+
+# Generate Locale
+    nano    /etc/locale.gen
+    locale-gen
+    echo LANG=en_US.UTF-8   >   /etc/locale.conf
+    export  LANG=en_US.UTF-8
+
+# Configure Time
+    ls  -l  /usr/share/zoneinfo |   less
+    ln  -s  /usr/share/zoneinfo/Asia/Kolkata
+    ln  -sf /etc/localtime
+    hwclock --systohc   -utc
+
+# Configure Pacman
+    nano    /etc/pacman.conf
+    enable  multilib    # archlinuxfr -> yaourt
+    pacman  -Syu
+
+# Finalize
+    mkinitcpio  -p  linux
+
+# Configure Hosts
+    echo myarchname >   /etc/hostname
+    nano    /etc/hosts
+        127.0.0.1   loopback    localhost   myarch
+
+# Install Wifi
+    pacman  -S  iw  wpa_supplication
+    pacman  -S  dialog
+
+# Create Password
+    passwd
+
+# Add user
+    useradd -m  -G  wheel, storage, power   -S  /bin/bash   gourav1607
+    passwd  gourav1607
+    ls  /home
+    pacman  -S  sudo
+    nano    /etc/sudoers    # uncomment wheel
+
+# Install grub
+    pacman  -S  grub
+    grub_install    --recheck   /dev/sda
+    grub_mkcinfig   -o  /boot/grub/grub.cfg
+    exit
+
+# Unmount
+    umount  /mnt/home
+    umount  /mnt
+    reboot
+
+# Install utility
+    pacman  -S  bash-completion xorg-server xorg-init   xorg-utils
+        xorg-server-utils   mesa    xorg-twm    xterm   xorg-xclock
+        xf86-input-synaptics
+    lspci | grep VGA
+    sudo    pacman  -Ss |   grep    xf86-video
+    sudo    pacman  -Sy xf86-video-non...
+    sudo    startx / exit
+
+# Install Window Manager
+    sudo    pacman  deepin  deepin-extra    lightdm
+
+# Install network utilities
+    sudo    pacman  -S  net-tools   network-manager-applet
+    stop    dhcpcd@__.service
+    disable dhcpcd@__.service
+    start   NetworkManager
+    enable  NetworkManager
+
+# Install Softwares
+    sudo    pacman  -S  pulseaudio  pulseaudio-alsa pavvcontrol vlc chromium
+        flashplugin unzip   zip unrar   tar p7zip   transmission-gtk    gedit
+        a52dec  faac    faad2   flac    jasper  lame    libdca  libdv   libmad
+        libmpeg2    libtheora   libvorbis   libxv   wavpack x264    xvidcore
+        libreoffice-fresh   yaourt  numix-themes
